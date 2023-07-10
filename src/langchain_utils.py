@@ -1,4 +1,5 @@
 from io import BytesIO
+import sys
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -7,6 +8,9 @@ from langchain.memory import ConversationBufferMemory
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 from pypdf import PdfReader
+
+sys.path.append("./src")
+from prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
 
 def get_pdf_text(pdf_docs: list[BytesIO]) -> str:
     """Extracts string from streamlit UploadedFile
@@ -77,10 +81,17 @@ def get_conversation_chain(
     """
 
     llm = ChatOpenAI(temperature=temperature)
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    memory = ConversationBufferMemory(
+        memory_key="chat_history",
+        output_key="answer",
+        return_messages=True
+    )
     conversation_chain = ConversationalRetrievalChain.from_llm(
+        condense_question_prompt=CONDENSE_QUESTION_PROMPT,
+        combine_docs_chain_kwargs={"prompt": QA_PROMPT},
         llm=llm,
+        memory=memory,
         retriever=vectorstore.as_retriever(),
-        memory=memory
+        return_source_documents=True
     )
     return conversation_chain

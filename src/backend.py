@@ -1,18 +1,14 @@
-# Instantiate vector store, then update it
-# Save vector store
-# Chat
-
 import io
 import json
 import logging
 import os
 import sys
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel
-from typing import Annotated
 import uvicorn
 
 sys.path.append("./src")
@@ -81,25 +77,29 @@ async def upload(
 @app.post("/chat")
 async def chat(data: Data) -> None:
 
-    logger.info("Checking for vector store...")
+    logger.info("Checking for existing vector store...")
     if VECTORSTORE is None:
         raise HTTPException(
             status_code=400,
             detail="Please check your API key and upload your documents."
         )
     
+    logger.info("Checking for existing chain...")
     global CONV_CHAIN
     if CONV_CHAIN is None:
         CONV_CHAIN = get_conversation_chain(
             vectorstore=VECTORSTORE,
             temperature=data.temperature
         )
+    
+    logger.info("Performing QA...")
     answer = CONV_CHAIN({"question": data.question})
     chat_history = answer["chat_history"]
     chat_history = [message.content for message in chat_history]
+    source_docs = answer["source_documents"]
+    source_docs = [doc.page_content for doc in source_docs]
+    json_payload = json.dumps({"chat_history": chat_history, "source_documents": source_docs})
 
-    logger.info(f"{chat_history}")
-    json_payload = json.dumps(chat_history)
     return Response(content=json_payload, media_type="application/json")
 
 if __name__ == '__main__':

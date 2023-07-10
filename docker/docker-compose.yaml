@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: ${PWD}
+      dockerfile: docker/app.Dockerfile
+    image: "mattoh91/finqa-streamlit:0.1.0"
+    ports:
+      - 8501:8501
+    depends_on:
+      - backend
+  backend:
+    build:
+      context: ${PWD}
+      dockerfile: docker/backend.Dockerfile
+    image: "mattoh91/finqa-backend:0.1.0"
+    ports:
+      - 8080:8080
+    volumes: []

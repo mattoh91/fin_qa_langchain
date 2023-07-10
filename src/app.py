@@ -21,14 +21,14 @@ def image_to_base64(img_path: str) -> str:
         return base64.b64encode(buffer.getvalue()).decode()
 
 
-def handle_userinput(answer: list[str]) -> None:
+def handle_userinput(answer: dict) -> None:
     """Extract llm response and write it into streamlit app using html templates
 
     Args:
         answer (str): list of strings containing user input question and bot response.
     """
 
-    for i, message in enumerate(answer):
+    for i, message in enumerate(answer["chat_history"]):
         # User response is always an even-indexed message
         if i % 2 == 0:
             st.write(user_template.replace("{{MSG}}", message)
@@ -40,6 +40,8 @@ def handle_userinput(answer: list[str]) -> None:
                 .replace("{{IMG}}", image_to_base64("./assets/images/robot.png")),
                 unsafe_allow_html=True
             )
+            with st.expander("Sources"):
+                st.write(answer["source_documents"])
 
 def main():
     st.set_page_config(page_title="Financial Statement Chatbot", page_icon=":robot_face:")
@@ -74,7 +76,7 @@ def main():
                 pdf_docs = [("files", pdf.getvalue()) for pdf in pdf_docs]
                 data = {"openai_api_key": openai_api_key}
                 headers = {"OpenAI-API-Key": openai_api_key}
-                requests.post("http://0.0.0.0:8080/upload", files=pdf_docs, headers=headers)
+                requests.post("http://backend:8080/upload", files=pdf_docs, headers=headers)
 
         st.write(reference_template, unsafe_allow_html=True)
 
@@ -90,7 +92,7 @@ def main():
             }
             json_payload = json.dumps(payload)
             headers={"Content-Type": "application/json"}
-            response = requests.post("http://0.0.0.0:8080/chat", data=json_payload, headers=headers)
+            response = requests.post("http://backend:8080/chat", data=json_payload, headers=headers)
             handle_userinput(response.json())
 
 
