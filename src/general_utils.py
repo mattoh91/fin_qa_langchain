@@ -33,5 +33,3 @@ def setup_logging(
         )
         logger.info(error)
         logger.info("Logging config file is not found. Basic config is being used.")
-
-

@@ -1,4 +1,4 @@
-css = '''
+css = """
 <style>
 .chat-message {
     padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex
@@ -37,28 +37,28 @@ css = '''
   opacity: 0.5;
 }
 
-'''
+"""
 
-bot_template = '''
+bot_template = """
 <div class="chat-message bot">
     <div class="avatar">
         <img src="data:image/png;base64,{{IMG}}">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
-'''
+"""
 
-user_template = '''
+user_template = """
 <div class="chat-message user">
     <div class="avatar">
         <img src="data:image/png;base64,{{IMG}}">
-    </div>    
+    </div>
     <div class="message">{{MSG}}</div>
 </div>
-'''
+"""
 
-reference_template = '''
+reference_template = """
 <div class="footer">
     <p class="reference-font">Icons by freepik and stasy</p>
 </div>
-'''
+"""

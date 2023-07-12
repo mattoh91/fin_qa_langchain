@@ -18,4 +18,4 @@ COPY --chown=$USER_ID:$USER_ID . .
 
 EXPOSE 8080
 
-CMD ["python", "src/backend.py"]
+CMD ["uvicorn", "src.backend:app", "--host", "0.0.0.0", "--port", "8080"]

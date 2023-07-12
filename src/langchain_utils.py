@@ -1,5 +1,5 @@
-from io import BytesIO
 import sys
+from io import BytesIO
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -12,8 +12,9 @@ from pypdf import PdfReader
 sys.path.append("./src")
 from prompts import CONDENSE_QUESTION_PROMPT, QA_PROMPT
 
+
 def get_pdf_text(pdf_docs: list[BytesIO]) -> str:
-    """Extracts string from streamlit UploadedFile
+    """Extracts string from streamlit UploadedFile.
 
     Args:
         pdf_docs (list[BytesIO]): List containing multiple streamlit UploadedFiles
@@ -30,8 +31,9 @@ def get_pdf_text(pdf_docs: list[BytesIO]) -> str:
 
     return text_data
 
+
 def get_text_chunks(text_data: str) -> list[str]:
-    """Split raw text into chunks
+    """Split raw text into chunks.
 
     Args:
         text_data (str): Raw text data
@@ -50,8 +52,9 @@ def get_text_chunks(text_data: str) -> list[str]:
 
     return chunks
 
+
 def get_vectorstore(chunks: list[str]) -> FAISS:
-    """Instantiate Faiss vectorstore
+    """Instantiate Faiss vectorstore.
 
     Args:
         chunks (list[str]): Text chunks
@@ -67,11 +70,11 @@ def get_vectorstore(chunks: list[str]) -> FAISS:
 
     return vectorstore
 
+
 def get_conversation_chain(
-    vectorstore: FAISS,
-    temperature: float
+    vectorstore: FAISS, temperature: float
 ) -> ConversationalRetrievalChain:
-    """Create conversation chain
+    """Create conversation chain.
 
     Args:
         vectorstore (FAISS): FAISS vectorstore object
@@ -82,9 +85,7 @@ def get_conversation_chain(
 
     llm = ChatOpenAI(temperature=temperature)
     memory = ConversationBufferMemory(
-        memory_key="chat_history",
-        output_key="answer",
-        return_messages=True
+        memory_key="chat_history", output_key="answer", return_messages=True
     )
     conversation_chain = ConversationalRetrievalChain.from_llm(
         condense_question_prompt=CONDENSE_QUESTION_PROMPT,
@@ -92,6 +93,6 @@ def get_conversation_chain(
         llm=llm,
         memory=memory,
         retriever=vectorstore.as_retriever(),
-        return_source_documents=True
+        return_source_documents=True,
     )
     return conversation_chain
