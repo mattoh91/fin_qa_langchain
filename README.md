@@ -17,6 +17,16 @@ To be clear, this chatbot is actually able to perform QA for any type of pdf doc
     └── __pycache__
 ```
   
+# Quickstart
+1. Git clone this repository.
+2. Use [docker compose](https://docs.docker.com/compose/gettingstarted/) to run the frontend streamlit dashboard at `0.0.0.0:8501` and the backend fastapi server at ``0.0.0.0:8080``.
+```bash
+docker compose -f ./docker/docker-compose.yaml up --build
+```
+3. Sign up for an [OpenAI API key](https://openai.com/) and input it into the textbox. Then, drag and drop your financial statement pdf of choice into the document upload area. Press the "upload" button.
+![streamlit screenshot](./assets/images/streamlit_screenshot.png)
+4. Using the central textbox, ask away!
+
 # Architecture
 A `ConversationalRetrievalChain` is used. This chain comprises 2 steps:
 1. Use input question + memory's `chat_history` to generate a "standalone" question that is used to retrieve the top 4 relevant documents from the vector store. Within the class method `from_llm` this chain corresponds to the parameter `question_generator`.
